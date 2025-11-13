@@ -9,7 +9,7 @@ export default function QuickActions() {
         <button onClick={() => navigate('/leads')} className="px-4 py-3 rounded-xl bg-blue-600/80 hover:bg-blue-600 text-white">Create Lead</button>
         <button onClick={() => navigate('/pipeline')} className="px-4 py-3 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white">Open Pipeline</button>
         <button onClick={() => navigate('/dashboard')} className="px-4 py-3 rounded-xl bg-emerald-600/80 hover:bg-emerald-600 text-white">View Analytics</button>
-        <a href="http://localhost:5000/health" target="_blank" rel="noreferrer" className="px-4 py-3 rounded-xl bg-gray-600/80 hover:bg-gray-600 text-white text-center">API Health</a>
+        <a href="https://next-gen-crm-backend.onrender.com/health" target="_blank" rel="noreferrer" className="px-4 py-3 rounded-xl bg-gray-600/80 hover:bg-gray-600 text-white text-center">API Health</a>
       </div>
     </div>
   )

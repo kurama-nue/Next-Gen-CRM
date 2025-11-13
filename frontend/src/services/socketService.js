@@ -5,7 +5,7 @@ let socket = null;
 export const initSocket = (token) => {
   if (socket) return socket;
 
-  socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+  socket = io(import.meta.env.VITE_SOCKET_URL || 'https://next-gen-crm-backend.onrender.com', {
     auth: {
       token,
     },
