@@ -17,5 +17,7 @@ build/
 # Database
 postgres_data/
 
+backend/crm_system.db
+
 # OS
 .DS_Store
