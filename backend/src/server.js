@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { sequelize } from './config/database.js';
 import './models/index.js';
+import bcrypt from 'bcryptjs';
+import User from './models/User.js';
 import { setupSocket } from './sockets/socketManager.js';
 import errorHandler from './middlewares/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
@@ -82,6 +84,24 @@ const startServer = async () => {
       
   await sequelize.sync({ alter: true });
   logger.info('✓ Database synced');
+
+      const defaults = [
+        { name: 'Admin', email: 'admin@crmsystem.com', password: 'Admin@123456', role: 'admin' },
+        { name: 'Manager', email: 'manager@crmsystem.com', password: 'Manager@123456', role: 'manager' },
+        { name: 'Sales Exec', email: 'sales@crmsystem.com', password: 'Sales@123456', role: 'sales' }
+      ];
+      for (const d of defaults) {
+        const existing = await User.findOne({ where: { email: d.email } });
+        const hashed = await bcrypt.hash(d.password, 10);
+        if (!existing) {
+          await User.create({ name: d.name, email: d.email, password: hashed, role: d.role });
+        } else {
+          if (!existing.password || !String(existing.password).startsWith('$2')) {
+            existing.password = hashed;
+            await existing.save();
+          }
+        }
+      }
     } catch (dbError) {
       logger.warn('⚠ Database connection failed:', dbError.message);
       logger.warn('⚠ Server will start without database. Database features will be unavailable.');

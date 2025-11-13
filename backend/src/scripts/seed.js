@@ -3,14 +3,18 @@ import sequelize from '../config/database.js'
 import User from '../models/User.js'
 import Lead from '../models/Lead.js'
 import Activity from '../models/Activity.js'
+import bcrypt from 'bcryptjs'
 
 dotenv.config()
 
 const run = async () => {
   await sequelize.sync({ alter: true })
-  const [admin] = await User.findOrCreate({ where: { email: 'admin@crmsystem.com' }, defaults: { name: 'Admin', password: 'Admin@123456', role: 'admin' } })
-  const [manager] = await User.findOrCreate({ where: { email: 'manager@crmsystem.com' }, defaults: { name: 'Manager', password: 'Manager@123456', role: 'manager' } })
-  const [sales] = await User.findOrCreate({ where: { email: 'sales@crmsystem.com' }, defaults: { name: 'Sales Exec', password: 'Sales@123456', role: 'sales' } })
+  const adminHash = await bcrypt.hash('Admin@123456', 10)
+  const managerHash = await bcrypt.hash('Manager@123456', 10)
+  const salesHash = await bcrypt.hash('Sales@123456', 10)
+  const [admin] = await User.findOrCreate({ where: { email: 'admin@crmsystem.com' }, defaults: { name: 'Admin', password: adminHash, role: 'admin' } })
+  const [manager] = await User.findOrCreate({ where: { email: 'manager@crmsystem.com' }, defaults: { name: 'Manager', password: managerHash, role: 'manager' } })
+  const [sales] = await User.findOrCreate({ where: { email: 'sales@crmsystem.com' }, defaults: { name: 'Sales Exec', password: salesHash, role: 'sales' } })
 
   const leadA = await Lead.create({ name: 'Acme Corp', email: 'contact@acme.com', status: 'active', ownerId: sales.id })
   const leadB = await Lead.create({ name: 'Globex', email: 'info@globex.com', status: 'new', ownerId: sales.id })
