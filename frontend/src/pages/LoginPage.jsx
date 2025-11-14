@@ -7,6 +7,7 @@ import apiClient from '../services/apiClient';
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@crmsystem.com');
   const [password, setPassword] = useState('Admin@123456');
+  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const dispatch = useDispatch();
@@ -31,9 +32,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-700 flex items-center justify-center px-4">
-      <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-8 w-full max-w-md text-white">
-        <div className="text-3xl font-bold text-center mb-8">Next‑Gen CRM</div>
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center px-4">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-700" />
+      <div className="absolute -z-10 blur-3xl opacity-60 w-96 h-96 rounded-full bg-indigo-400/40 top-10 left-10" />
+      <div className="absolute -z-10 blur-3xl opacity-60 w-96 h-96 rounded-full bg-purple-400/40 bottom-10 right-10" />
+      <div className="backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-8 w-full max-w-md text-white shadow-2xl">
+        <div className="flex items-center justify-center mb-6">
+          <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center text-white text-xl font-bold">NC</div>
+        </div>
+        <div className="text-3xl font-bold text-center mb-2">Next‑Gen CRM</div>
+        <div className="text-center text-white/70 mb-8">Sign in to continue</div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
@@ -61,13 +69,20 @@ export default function LoginPage() {
               Password
             </label>
             <input
-              type="password"
+              type={show ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-white/30 bg-white/10 text-white placeholder-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
               required
             />
+            <div className="flex items-center justify-between mt-2">
+              <label className="flex items-center gap-2 text-white/80 text-sm">
+                <input type="checkbox" checked={show} onChange={(e)=>setShow(e.target.checked)} />
+                Show password
+              </label>
+              <a href="#" className="text-sm text-white/80 hover:text-white">Forgot password?</a>
+            </div>
           </div>
 
           <button
@@ -78,10 +93,11 @@ export default function LoginPage() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
-        <p className="text-center text-white/70 text-sm mt-6">
-          Demo credentials available on login form
-        </p>
+        <div className="mt-6 text-center text-white/80 text-sm">Demo: admin@crmsystem.com / Admin@123456</div>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <button className="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30">Google</button>
+          <button className="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30">GitHub</button>
+        </div>
       </div>
     </div>
   );

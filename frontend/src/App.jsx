@@ -15,6 +15,7 @@ import LeadsPage from './pages/LeadsPage'
 import RegisterPage from './pages/RegisterPage'
 import PipelinePage from './pages/PipelinePage'
 import ResourcePage from './pages/ResourcePage'
+import ActivitiesPage from './pages/ActivitiesPage'
 
 export default function App() {
   const { token, isAuthenticated } = useSelector(state => state.auth)
@@ -54,6 +55,16 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <PipelinePage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/activities"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <ActivitiesPage />
               </AppLayout>
             </ProtectedRoute>
           }

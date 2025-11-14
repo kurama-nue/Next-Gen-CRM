@@ -11,6 +11,7 @@ export default function LeadsPage() {
   const { leads, loading } = useSelector((state) => state.leads);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', company: '' });
+  const [editingId, setEditingId] = useState(null);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
 
   useEffect(() => {
@@ -30,8 +31,16 @@ export default function LeadsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiClient.post('/leads', formData);
-      dispatch(addLead(response.data.data || formData));
+      if (editingId) {
+        const response = await apiClient.put(`/leads/${editingId}`, formData);
+        dispatch(fetchLeadsStart());
+        const refreshed = await apiClient.get('/leads');
+        dispatch(fetchLeadsSuccess(refreshed.data.data || []));
+        setEditingId(null);
+      } else {
+        const response = await apiClient.post('/leads', formData);
+        dispatch(addLead(response.data.data || formData));
+      }
       setFormData({ name: '', email: '', phone: '', company: '' });
       setShowForm(false);
     } catch (error) {
@@ -141,7 +150,13 @@ export default function LeadsPage() {
                     <td className="px-6 py-4 text-sm text-slate-900 dark:text-slate-200">{lead.email}</td>
                     <td className="px-6 py-4 text-sm text-slate-900 dark:text-slate-200">{lead.phone || '-'}</td>
                     <td className="px-6 py-4 text-sm text-slate-900 dark:text-slate-200">{lead.company || '-'}</td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm flex gap-2">
+                      <button
+                        onClick={() => { setShowForm(true); setEditingId(lead.id); setFormData({ name: lead.name || '', email: lead.email || '', phone: lead.phone || '', company: lead.company || '' }) }}
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-xl"
+                      >
+                        Edit
+                      </button>
                       <button
                         onClick={() => handleDelete(lead.id)}
                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-xl flex items-center gap-2"

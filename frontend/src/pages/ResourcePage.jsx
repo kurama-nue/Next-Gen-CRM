@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import GenericTable from '../components/GenericTable'
 
@@ -112,5 +112,31 @@ export default function ResourcePage() {
     return s
   }, [group, name])
   const title = `${group?.toUpperCase() || ''} · ${name?.replace(/-/g,' ') || ''}`
-  return <GenericTable title={title} columns={conf.columns} rows={conf.rows} />
+  const [rows, setRows] = useState([])
+  useEffect(() => {
+    const base = conf.rows || []
+    const more = Array.from({ length: Math.max(5 - base.length, 0) }).map((_,i)=>{
+      const obj = {}
+      conf.columns.forEach((c,idx)=>{ obj[c.key] = `${c.label} ${i+1}` })
+      return obj
+    })
+    setRows([...base, ...more])
+  }, [conf])
+  const onEdit = (r, idx) => {
+    const next = prompt('Edit as JSON', JSON.stringify(r))
+    if (!next) return
+    try {
+      const obj = JSON.parse(next)
+      setRows(prev => prev.map((x,i)=> i===idx ? obj : x))
+    } catch {}
+  }
+  const onDelete = (r, idx) => {
+    setRows(prev => prev.filter((_,i)=> i!==idx))
+  }
+  const onCreate = () => {
+    const obj = {}
+    conf.columns.forEach(c=>{ obj[c.key] = '' })
+    setRows(prev => [obj, ...prev])
+  }
+  return <GenericTable title={title} columns={conf.columns} rows={rows} actions onEdit={onEdit} onDelete={onDelete} onCreate={onCreate} />
 }
