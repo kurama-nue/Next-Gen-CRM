@@ -37,10 +37,26 @@ const server = http.createServer(app);
 
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
-}));
+
+const allowedOriginsEnv = process.env.CORS_ORIGINS || process.env.FRONTEND_URL || '';
+const allowedOrigins = allowedOriginsEnv
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+if (allowedOrigins.length === 0) {
+  allowedOrigins.push('http://localhost:5173', 'https://next-gen-crm-r27k.onrender.com');
+}
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
